@@ -531,6 +531,34 @@ If you say that calmly — **you are in the top tier**.
 
 ## Clone Graph
 
+```js
+
+function cloneGraph(node) {
+    if (!node) return null;
+    
+    const map = new Map();
+    
+    function dfs(n) {
+        // Base case: already cloned
+        if (map.has(n)) return map.get(n);
+        
+        // Create clone with empty neighbors
+        const clone = { val: n.val, neighbors: [] };
+        map.set(n, clone);
+        
+        // Clone all neighbors recursively
+        for (const neighbor of n.neighbors) {
+            clone.neighbors.push(dfs(neighbor));
+        }
+        
+        return clone;
+    }
+    
+    return dfs(node);
+}
+
+``
+
 Perfect choice. **Clone Graph** is a **classic Google bar-raiser problem** because it tests:
 
 * Graph fundamentals
