@@ -16,178 +16,344 @@
 
 Given a 2D grid of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.
 
-**Perfect. You already have Google-quality code.**
+Great snippet. This is **clean, interview-grade DFS flood-fill code**.
+I’ll explain it **mechanically + intuitively**, so you can **rebuild it from memory**, not by copying.
 
-Now I'll explain it **slowly, mechanically, and intuitively** so you can **re-implement it from scratch** without memorizing.
+I’ll go **top → bottom**, and at each step I’ll tell you **why it exists**.
 
-***
-
-### Visual Understanding (IMPORTANT)
-
-
-
-
-
-
-
-Imagine:
-- `'1'` = land
-- `'0'` = water
-
-An **island** is just land cells touching **up / down / left / right**.
-
-Your job is **not** to find shapes. Your job is simply to **count how many times you start sinking land**.
-
-***
-
-### Step 0️⃣ — What problem are we really solving?
-
-Forget the grid for a second.
-
-You are solving:
-
-> "How many **connected components** of land exist?"
-
-That's it. Everything else is implementation.
-
-***
-
-### Step 1️⃣ — Why do we even need DFS?
-
-Because:
-- When we see **one land cell**, we must **remove all land connected to it**
-- Otherwise we'll count the same island multiple times
-
-DFS's job is **NOT to count islands**. DFS's job is to **destroy one island completely**.
-
-***
-
-### Step 2️⃣ — Outer loops: "Scanning the map"
+---
+Answer: 
 
 ```js
-for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-```
+class Solution {
+    /**
+     * @param {character[][]} grid
+     * @return {number}
+     */
+    numIslands(grid) {
+        const directions = [
+            [1, 0],
+            [-1, 0],
+            [0, 1],
+            [0, -1],
+        ];
+        const ROWS = grid.length,
+            COLS = grid[0].length;
+        let islands = 0;
 
-Think like this:
+        const dfs = (r, c) => {
+            if (r < 0 || c < 0 || r >= ROWS || c >= COLS || grid[r][c] === '0')
+                return;
 
-> "I'm walking cell by cell across the map."
+            grid[r][c] = '0';
+            for (const [dr, dc] of directions) {
+                dfs(r + dr, c + dc);
+            }
+        };
 
-Nothing smart yet. Just scanning.
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                if (grid[r][c] === '1') {
+                    dfs(r, c);
+                    islands++;
+                }
+            }
+        }
 
-***
-
-### Step 3️⃣ — This is the ONLY moment we count an island
-
-```js
-if (grid[r][c] === '1') {
-    islands++;
-    dfs(r, c);
+        return islands;
+    }
 }
 ```
+# 🔍 What problem this code solves (1-liner)
 
-### Why do we increment here?
+> Count how many **connected components of land (`'1'`)** exist in a 2D grid, where connections are **up, down, left, right**.
 
-Because:
-- This is the **first time** we touched this island
-- Everything connected to it hasn't been visited yet
+This is a **connected components problem on a grid**.
 
-💡 **Key mental rule**
+---
 
-> "Every time I find fresh land, I've discovered a new island."
+# 🧠 High-level strategy (before code)
 
-Then immediately:
+1. Walk through every cell in the grid
+2. When you find **new land**, that means:
 
-> "Let me destroy it so I never see it again."
+   * You found a **new island**
+   * You must **eliminate the entire island** so you don’t count it again
+3. Use **DFS** to “sink” the island
 
-***
+---
 
-### Step 4️⃣ — What does `dfs(r, c)` REALLY mean?
+# 🧩 Code Breakdown (Line by Line)
 
-Forget recursion for a moment.
+---
 
-### `dfs(r, c)` means:
-
-> "From this land cell, sink **everything connected** to it."
-
-That's it.
-
-***
-
-### Step 5️⃣ — The base condition (most important part)
+## 1️⃣ Directions array — why it exists
 
 ```js
-if (
-    r < 0 || c < 0 ||
-    r >= rows || c >= cols ||
-    grid[r][c] === '0'
-) return;
+const directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+];
 ```
 
-### This says:
+### What this means
 
-Stop DFS if:
-- You fall **outside the grid**
-- You hit **water**
-- You hit **already visited land** (because we convert land → water)
+Each pair represents a **move**:
 
-This prevents:
-- Infinite recursion
-- Revisiting same cells
+| Pair      | Meaning |
+| --------- | ------- |
+| `[1, 0]`  | Down    |
+| `[-1, 0]` | Up      |
+| `[0, 1]`  | Right   |
+| `[0, -1]` | Left    |
 
-***
+### Why this is important
 
-### Step 6️⃣ — Marking visited (THIS is the trick)
+* Avoids repeating code
+* Makes DFS generic
+* Easy to extend (diagonals, etc.)
+
+💡 **Mental model**:
+
+> “From any cell, these are the only neighbors I’m allowed to visit.”
+
+---
+
+## 2️⃣ Grid size & island counter
+
+```js
+const ROWS = grid.length,
+      COLS = grid[0].length;
+let islands = 0;
+```
+
+### Why this exists
+
+* `ROWS`, `COLS` prevent recalculating length repeatedly
+* `islands` tracks how many times we discover **fresh land**
+
+⚠️ **Assumption**:
+Grid is non-empty (valid per LeetCode constraints).
+
+---
+
+## 3️⃣ DFS function — the heart of the solution
+
+```js
+const dfs = (r, c) => {
+```
+
+### What `dfs(r, c)` really means
+
+> “From this land cell, **destroy everything connected to it**.”
+
+DFS is **not counting** anything.
+DFS is **cleanup**.
+
+---
+
+## 4️⃣ Base condition — most critical part
+
+```js
+if (r < 0 || c < 0 || r >= ROWS || c >= COLS || grid[r][c] === '0')
+    return;
+```
+
+### This stops DFS when:
+
+* You go **out of bounds**
+* You hit **water**
+* You hit **already visited land** (because we convert land → water)
+
+💡 This single condition prevents:
+
+* Infinite recursion
+* Revisiting the same cell
+* Stack overflow from cycles
+
+---
+
+## 5️⃣ Mark the cell as visited (GENIUS TRICK)
 
 ```js
 grid[r][c] = '0';
 ```
 
-Instead of using a `visited` array, we:
-- **Sink the land**
-- Convert `'1'` → `'0'`
+### Why this is important
 
-### Why this is genius (and Google loves it):
-- Saves space
-- Simpler code
-- Less bugs
-- Clear intent
+Instead of a `visited[][]` array, we:
 
-Once sunk, that land **can never be counted again**.
+* Mutate the grid
+* Sink the land
 
-***
+### Why interviewers love this
 
-### Step 7️⃣ — Exploring neighbors
+* Saves space
+* Clear intent
+* Fewer bugs
+
+💡 **Invariant**:
+
+> Once a cell becomes `'0'`, it will never be counted again.
+
+---
+
+## 6️⃣ Explore all neighbors
 
 ```js
-dfs(r + 1, c);
-dfs(r - 1, c);
-dfs(r, c + 1);
-dfs(r, c - 1);
+for (const [dr, dc] of directions) {
+    dfs(r + dr, c + dc);
+}
 ```
 
-This means:
+### What happens here
 
-> "From this land cell, walk in all 4 directions."
+From the current land cell:
 
-Each call either:
-- Sinks land
-- Or immediately returns (if water/outside)
+* Move in all 4 directions
+* DFS spreads like water flooding land
 
-DFS naturally spreads until the whole island is gone.
+Each recursive call:
 
-***
+* Either sinks land
+* Or immediately returns
 
-### Step 8️⃣ — Why this works (the invariant)
+This continues until **the entire island is erased**.
+
+---
+
+## 7️⃣ Outer loops — scanning the grid
+
+```js
+for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+```
+
+### What this means
+
+You are simply **walking the map**.
+
+No logic yet. Just scanning.
+
+---
+
+## 8️⃣ The ONLY place we count an island
+
+```js
+if (grid[r][c] === '1') {
+    dfs(r, c);
+    islands++;
+}
+```
+
+### Why count here?
+
+Because:
+
+* This is the **first time** we’ve seen this island
+* DFS will now erase the entire connected component
+
+💡 **Golden rule**:
+
+> Every time you see unvisited land → new island.
+
+---
+
+## 9️⃣ Return the result
+
+```js
+return islands;
+```
+
+At this point:
+
+* Every island has been discovered exactly once
+* Every land cell has been visited exactly once
+
+---
+
+# 🧪 Dry Run (Quick Example)
+
+Grid:
+
+```
+1 1 0
+1 0 0
+0 0 1
+```
+
+### Walkthrough
+
+* First `'1'` → `islands = 1`, DFS sinks top-left island
+* Middle cells are now `'0'`
+* Bottom-right `'1'` → `islands = 2`
+
+✅ Correct answer: `2`
+
+---
+
+# 🧠 Why this algorithm works (Invariant)
 
 After `dfs(r, c)` finishes:
-- **The entire island is erased**
-- No cell of that island will ever trigger `islands++` again
 
-That's the invariant Google interviewers care about.
+> **All land connected to `(r, c)` is converted to water**
 
-***
+So:
 
+* That island is **fully removed**
+* It can **never be counted again**
+
+---
+
+# ⏱️ Time & Space Complexity
+
+### Time
+
+```
+O(ROWS × COLS)
+```
+
+Each cell is visited **once**.
+
+### Space
+
+```
+O(ROWS × COLS) worst case
+```
+
+Due to recursion stack (entire grid = land).
+
+---
+
+# 🧩 Common Interview Follow-ups (You should answer instantly)
+
+### Can BFS be used?
+
+✅ Yes — same logic, queue instead of recursion.
+
+### What if diagonals are allowed?
+
+➕ Add 4 more directions.
+
+### What if grid can’t be modified?
+
+🟦 Use `visited[][]`.
+
+### What kind of problem is this?
+
+🧠 Connected Components / Flood Fill.
+
+---
+
+# 🧢 One-Sentence Interview Explanation (Perfect Answer)
+
+> “This is a connected components problem. I scan the grid, and whenever I find unvisited land, I increment the island count and run DFS to mark all connected land as visited.”
+
+If you say that calmly → **you pass**.
+
+---
 ### Step 9️⃣ — How YOU implement this from scratch (no memorization)
 
 ### Write it in THIS order every time:
