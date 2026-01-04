@@ -6,6 +6,10 @@
 |---------|-----------|--------------|--------|
 | [Number of Islands](#number-of-islands) | Medium | DFS, Connected Components, Grid Traversal | ✅ |
 | [Clone Graph](#Clone-Graph) | | | |
+| [Pacific Atlantic Water Flow](#Pacific Atlantic Water Flow) | | | |
+| Content Cell | | | |
+| Content Cell | | | |
+| Content Cell | | | |
 | Content Cell | | | |
 
 ***
@@ -1064,4 +1068,281 @@ You already understand:
 This is **core Google graph knowledge**.
 
 ---
+
+=================================================================================
+
+## Pacific Atlantic Water Flow
+
+Below is a **Noogler-to-Distinguished-Engineer level explanation** of **Pacific Atlantic Water Flow** using **your exact code**, with **mental models, invariants, and interview follow-ups**.
+
+---
+
+## 🌊 First — See the problem in your head (CRITICAL)
+
+![Image](https://assets.leetcode.com/uploads/2021/06/08/waterflow-grid.jpg)
+
+![Image](https://raw.githubusercontent.com/rivea0/leetcode-meditations-assets/main/src/2024-06-17/55-lm.png)
+
+![Image](https://www.powermag.com/wp-content/uploads/2017/06/44_pwr_060117.jpg)
+
+* Grid of heights
+* **Pacific Ocean** touches **top + left**
+* **Atlantic Ocean** touches **bottom + right**
+* Water can flow **downhill or equal height**
+
+We must find cells that can flow to **both oceans**.
+
+---
+
+# 🔥 The BIG Insight (Google Bar-Raiser Moment)
+
+> ❌ Don’t simulate water flowing *from every cell*
+> ✅ Reverse the thinking: **start from the oceans and go uphill**
+
+This converts:
+
+* **Brute force O((RC)²)** → ❌
+* **Multi-source DFS/BFS O(RC)** → ✅
+
+This is why this problem exists in interviews.
+
+---
+
+# Step-by-Step (Mechanical, Interview-Ready)
+
+---
+
+## Step 1️⃣ — Why two boolean grids?
+
+```js
+let pac = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+let atl = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+```
+
+### Meaning
+
+* `pac[r][c] = true` → this cell can reach **Pacific**
+* `atl[r][c] = true` → this cell can reach **Atlantic**
+
+We will later **intersect** them.
+
+---
+
+## Step 2️⃣ — What does `dfs(r, c, ocean)` REALLY mean?
+
+```js
+dfs(r, c, ocean)
+```
+
+> “Mark all cells that can reach **this ocean** starting from `(r, c)`”
+
+Not:
+
+* Not flowing water
+* Not checking paths
+
+This is **reverse graph traversal**.
+
+---
+
+## Step 3️⃣ — Why this DFS condition is the heart of the problem
+
+```js
+heights[nr][nc] >= heights[r][c]
+```
+
+### This is counter-intuitive but correct.
+
+We move **uphill**, because:
+
+* If water can flow **down** from A → B
+* Then B can reach ocean **via A**
+
+So from the ocean’s perspective:
+
+> “Which higher or equal cells can send water to me?”
+
+This is the key insight Google expects.
+
+---
+
+## Step 4️⃣ — DFS mechanics
+
+```js
+ocean[r][c] = true;
+```
+
+Once marked:
+
+* Never revisit
+* Prevent cycles
+* Guarantees O(RC)
+
+---
+
+## Step 5️⃣ — Why start DFS from borders?
+
+```js
+for (let c = 0; c < COLS; c++) {
+    dfs(0, c, pac);           // Pacific top
+    dfs(ROWS - 1, c, atl);   // Atlantic bottom
+}
+for (let r = 0; r < ROWS; r++) {
+    dfs(r, 0, pac);          // Pacific left
+    dfs(r, COLS - 1, atl);   // Atlantic right
+}
+```
+
+### Multi-source DFS
+
+We start DFS from **all ocean-adjacent cells** at once.
+
+This avoids:
+
+* Repeating DFS from every cell
+* Exponential blowup
+
+---
+
+## Step 6️⃣ — Final intersection
+
+```js
+if (pac[r][c] && atl[r][c]) {
+    res.push([r, c]);
+}
+```
+
+Meaning:
+
+> “This cell can send water to both oceans.”
+
+---
+
+# 🧠 Invariant (Say This in Interviews)
+
+> “Once a cell is marked reachable for an ocean, all higher or equal neighbors that can drain into it will also be marked.”
+
+This invariant guarantees correctness.
+
+---
+
+# ⏱ Complexity (Google WILL ask)
+
+### Time
+
+```
+O(R × C)
+```
+
+Each cell is visited **at most twice** (Pacific + Atlantic).
+
+### Space
+
+```
+O(R × C)
+```
+
+* Two boolean grids
+* DFS recursion stack
+
+---
+
+# 🔥 Follow-Up Questions & How Different Levels Answer
+
+---
+
+## 🧑‍💻 Noogler (L3 / L4)
+
+### ❓ Why reverse the flow?
+
+**Answer**
+
+> “Because simulating flow from each cell is expensive. Reversing lets us do multi-source DFS efficiently.”
+
+---
+
+### ❓ Why do we need two grids?
+
+**Answer**
+
+> “Each grid tracks reachability to one ocean independently.”
+
+---
+
+## 👨‍💻 SDE-2 / SDE-3 (Strong Answer)
+
+### ❓ Can this be done with BFS?
+
+**Answer**
+
+> “Yes. Replace DFS with BFS queues initialized with ocean-border cells. This avoids recursion depth issues.”
+
+---
+
+### ❓ What if heights are very large?
+
+**Answer**
+
+> “Heights magnitude doesn’t matter since comparisons are constant-time.”
+
+---
+
+### ❓ Why not start DFS from every cell?
+
+**Answer**
+
+> “That would lead to O((RC)²) time due to repeated traversal.”
+
+---
+
+## 🧠 Distinguished Engineer (Bar-Raiser Answer)
+
+### ❓ What pattern does this problem belong to?
+
+**Answer**
+
+> “This is a **multi-source reverse reachability problem** on a directed acyclic implicit graph.”
+
+---
+
+### ❓ What’s the abstract graph model?
+
+**Answer**
+
+> “Each cell is a node. An edge exists from A → B if water can flow from A to B. We reverse edges and compute reachability from sink nodes.”
+
+---
+
+### ❓ How would you generalize this?
+
+**Answer**
+
+> “This pattern applies to influence propagation, dependency resolution, and network drainage problems using reverse traversal.”
+
+---
+
+### ❓ How would you scale this for very large grids?
+
+**Answer**
+
+> “Use iterative BFS, bitsets for memory compression, and possibly partition the grid for parallel traversal.”
+
+---
+
+# ❌ Common Wrong Answers (Fail Signals)
+
+🚫 “We try all paths from each cell”
+🚫 “DFS from every cell and check both oceans”
+🚫 “I memorized this solution”
+
+---
+
+# ✅ Golden One-Liner (MEMORIZE)
+
+> “This is a multi-source DFS problem where we reverse the water flow and compute reachability from both oceans, then intersect the results.”
+
+Say this calmly → **Google bar met**.
+
+---
+
 
