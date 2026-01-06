@@ -1,8 +1,9 @@
 # Graph Problems - Interview Guide
 
 ## Pre Read for Graphs -
-   1. [2D-Grid-or-Matrix-Basics](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/e992d14211ef4945cda45fd62f912df257a2386c/2D-Grid-or-Matrix-Basics.md)
-   2. [DFS-&-BFS](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/cf73ce7523d9e9726db773d3bb454ecddbbb8dc7/DFS-%26-BFS.md)
+   1. [Basics of Graphs in detail](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/7f850ac2a3f05bdb50685e9213a6028cc92ae282/Basics-of-Graphs.md)
+   2. [2D-Grid-or-Matrix-Basics](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/e992d14211ef4945cda45fd62f912df257a2386c/2D-Grid-or-Matrix-Basics.md)
+   3. [DFS-&-BFS](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/cf73ce7523d9e9726db773d3bb454ecddbbb8dc7/DFS-%26-BFS.md)
 ## Problem Index
 
 | Problem | Difficulty | Key Concepts | Status |
