@@ -1,6 +1,6 @@
 # Graph Problems - Interview Guide
 
-## Pre Read for Graphs - 2D-Grid-or-Matrix-Basics.md
+## Pre Read for Graphs - [2D-Grid-or-Matrix-Basics.md](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/e992d14211ef4945cda45fd62f912df257a2386c/2D-Grid-or-Matrix-Basics.md)
 ## Problem Index
 
 | Problem | Difficulty | Key Concepts | Status |
