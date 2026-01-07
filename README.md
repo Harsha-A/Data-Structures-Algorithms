@@ -11,7 +11,7 @@
 | [Number of Islands](#number-of-islands) | Medium | DFS, Connected Components, Grid Traversal | ✅ |
 | [Clone Graph](#Clone-Graph) | | | |
 | [Pacific Atlantic Water Flow](#Pacific-Atlantic-Water-Flow) | | | |
-| Content Cell | | | |
+| [Course Schedule](#Course-Schedule) | | | |
 | Content Cell | | | |
 | Content Cell | | | |
 | Content Cell | | | |
@@ -2022,4 +2022,306 @@ Do this for **10 days** → pattern recognition becomes **automatic**.
 
 =======================================================================
 
+## Course Scheduler 
 
+Great question — this is **exactly the kind of solution Google expects a Noogler to understand *deeply*, not just memorize**.
+
+I’ll explain this in a **Noogler-style interview walkthrough**, then give you **Google follow-up questions (with expected answers)**.
+
+---
+
+## 🧠 Problem Restatement (What interviewer wants you to say)
+
+We’re given:
+
+* `numCourses` labeled `0 → n-1`
+* `prerequisites[i] = [a, b]` meaning **b must be taken before a**
+
+👉 This is a **directed graph**:
+
+* **Node** = course
+* **Edge** = prerequisite dependency (`a → b`)
+
+**Goal**:
+
+> Can we finish all courses?
+> Which translates to:
+> 👉 **Does the directed graph contain a cycle?**
+
+---
+
+## 🧩 High-Level Pattern (Say this early in interview)
+
+> “This is a **cycle detection problem in a directed graph**, so I’ll use **DFS with a recursion stack**.”
+
+That sentence alone signals **strong fundamentals**.
+
+---
+
+## 🔍 Step-by-Step Explanation (Line by Line)
+
+---
+
+### 1️⃣ Build the Graph (Adjacency List)
+
+```js
+const preMap = new Map();
+for (let i = 0; i < numCourses; i++) {
+    preMap.set(i, []);
+}
+```
+
+✔ Initialize every course with an empty prerequisite list
+✔ Prevents undefined checks later
+
+```js
+for (let [crs, pre] of prerequisites) {
+    preMap.get(crs).push(pre);
+}
+```
+
+📌 Meaning:
+
+* `crs → pre`
+* To take `crs`, we must take `pre` first
+
+Graph example:
+
+```
+0 → 1
+1 → 2
+2 → 0   ❌ cycle
+```
+
+![Image](https://blog.mrinalini.dev/img/graphs_dfs_directed_course_select.jpg)
+
+![Image](https://media.geeksforgeeks.org/wp-content/uploads/detect-cycle.png)
+
+---
+
+### 2️⃣ Why Do We Need `visiting`?
+
+```js
+const visiting = new Set();
+```
+
+This represents:
+
+> **Nodes currently in the DFS call stack**
+
+This is **NOT** the same as `visited`.
+
+| Set                            | Meaning                 |
+| ------------------------------ | ----------------------- |
+| `visiting`                     | Active recursion path   |
+| `preMap.get(crs).length === 0` | Already fully processed |
+
+---
+
+### 3️⃣ DFS Logic (CORE OF THE SOLUTION)
+
+```js
+const dfs = (crs) => {
+```
+
+---
+
+#### 🚨 Cycle Detection
+
+```js
+if (visiting.has(crs)) {
+    return false;
+}
+```
+
+✔ If we revisit a node **already in the current path**,
+✔ That means we found a **cycle**
+
+📌 This is the **directed graph equivalent of a loop**
+
+---
+
+#### ✅ Base Case: No Prerequisites
+
+```js
+if (preMap.get(crs).length === 0) {
+    return true;
+}
+```
+
+✔ Course has no unmet dependencies
+✔ Safe to take
+
+---
+
+#### 🔁 Explore Dependencies
+
+```js
+visiting.add(crs);
+```
+
+📌 Mark this course as **currently being explored**
+
+```js
+for (let pre of preMap.get(crs)) {
+    if (!dfs(pre)) {
+        return false;
+    }
+}
+```
+
+✔ Recursively check all prerequisites
+✔ If any dependency fails → propagate failure
+
+---
+
+#### 🧹 Backtracking + Memoization
+
+```js
+visiting.delete(crs);
+preMap.set(crs, []);
+return true;
+```
+
+🔥 **This is very important**
+
+What this does:
+
+* Removes course from current path
+* Clears its prerequisite list
+
+📌 Meaning:
+
+> “This course has been verified as safe — don’t recompute it again.”
+
+This avoids repeated DFS work and gives **O(V + E)** time.
+
+---
+
+### 4️⃣ Run DFS from Every Course
+
+```js
+for (let c = 0; c < numCourses; c++) {
+    if (!dfs(c)) {
+        return false;
+    }
+}
+return true;
+```
+
+Why?
+
+* Graph may be **disconnected**
+* We must check **every component**
+
+---
+
+## ⏱ Time & Space Complexity (Must say this)
+
+### Time
+
+* Each edge visited **once**
+* `O(V + E)`
+
+### Space
+
+* Adjacency list: `O(V + E)`
+* Recursion stack + set: `O(V)`
+
+---
+
+## 🎯 How a Noogler Should Summarize (Memorize This)
+
+> “I modeled courses as a directed graph and used DFS with a recursion stack to detect cycles.
+> If a node appears twice in the same DFS path, a cycle exists.
+> I also memoized completed nodes to avoid redundant work.”
+
+---
+
+# 🔥 Google Follow-Up Questions (VERY IMPORTANT)
+
+### 1️⃣ Why do we need `visiting`? Why not just `visited`?
+
+**Expected Answer:**
+
+> In directed graphs, `visited` alone cannot detect cycles.
+> We must know whether a node is in the **current DFS path**, not just visited sometime earlier.
+
+---
+
+### 2️⃣ What happens if we remove this line?
+
+```js
+preMap.set(crs, []);
+```
+
+**Answer:**
+
+> The algorithm still works, but becomes inefficient.
+> Without memoization, the same subgraph can be recomputed multiple times.
+
+---
+
+### 3️⃣ Can BFS solve this problem?
+
+✅ **Yes — using Kahn’s Algorithm**
+
+Follow-up explanation:
+
+* Track indegrees
+* Remove nodes with indegree 0
+* If nodes remain → cycle exists
+
+Google may ask you to **compare DFS vs BFS approaches**.
+
+---
+
+### 4️⃣ Why does this detect cycles correctly?
+
+Expected reasoning:
+
+* A cycle means we revisit a node **before finishing its DFS**
+* `visiting` tracks unfinished nodes
+* Encountering them again ⇒ circular dependency
+
+---
+
+### 5️⃣ What if prerequisites were bidirectional?
+
+**Answer:**
+
+> Then this would be an undirected graph, and cycle detection would require parent tracking instead of a recursion stack.
+
+---
+
+### 6️⃣ Stack Overflow Risk?
+
+Yes.
+
+Follow-up:
+
+> “If `numCourses` is large and dependencies are deep, recursion may overflow.
+> In production, BFS (Kahn’s) or iterative DFS would be safer.”
+
+---
+
+## 🧠 Pattern Recognition (Interview Gold)
+
+This problem belongs to:
+
+| Pattern                 | Why                 |
+| ----------------------- | ------------------- |
+| Directed graph          | Dependencies        |
+| Cycle detection         | Invalid schedule    |
+| DFS + recursion stack   | Directed cycles     |
+| Topological feasibility | Can we order nodes? |
+
+---
+
+## ✅ Final Noogler Confidence Line
+
+Say this at the end:
+
+> “This solution guarantees correctness by detecting directed cycles using DFS and avoids redundant computation through memoization.”
+
+---
