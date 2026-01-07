@@ -8,10 +8,10 @@
 
 | Problem | Difficulty | Key Concepts | Status |
 |---------|-----------|--------------|--------|
-| [Number of Islands](#number-of-islands) | Medium | DFS, Connected Components, Grid Traversal | ✅ |
+| [Number of Islands](#number-of-islands) | Medium | DFS, Connected Components, Grid Traversal | ✅ |  |
 | [Clone Graph](#Clone-Graph) | | | |
 | [Pacific Atlantic Water Flow](#Pacific-Atlantic-Water-Flow) | | | |
-| [Course Scheduler](#Course-Scheduler) | | | |
+| [Course Scheduler](#Course-Scheduler) | Medium | DFS, Directed Graph | | [Detailed Explanation](#Detailed-Explanation)  |
 | Content Cell | | | |
 | Content Cell | | | |
 | Content Cell | | | |
@@ -2323,5 +2323,287 @@ This problem belongs to:
 Say this at the end:
 
 > “This solution guarantees correctness by detecting directed cycles using DFS and avoids redundant computation through memoization.”
+
+---
+
+
+## Detailed Explanation : 
+
+No worries — this line confuses **almost everyone the first time**.
+Let’s slow it **way down** and explain it **visually + mechanically**, no jargon.
+
+---
+
+## The line you’re confused about
+
+```js
+for (let [crs, pre] of prerequisites) {
+    preMap.get(crs).push(pre);
+}
+```
+
+I’ll explain **each piece separately**, then put it all together.
+
+---
+
+# 1️⃣ What is `prerequisites`?
+
+`prerequisites` is an **array of pairs**.
+
+Example input:
+
+```js
+prerequisites = [[0,1], [1,2]]
+```
+
+Each inner array has **2 numbers**:
+
+```js
+[crs, pre]
+```
+
+Meaning:
+
+| Name  | Meaning                     |
+| ----- | --------------------------- |
+| `crs` | course you want to take     |
+| `pre` | course you must take BEFORE |
+
+So:
+
+```js
+[0, 1]  →  to take course 0, you must first take course 1
+[1, 2]  →  to take course 1, you must first take course 2
+```
+
+---
+
+# 2️⃣ What does `for (let [crs, pre] of prerequisites)` mean?
+
+This is **array destructuring**.
+
+It means:
+
+```js
+for (let pair of prerequisites) {
+    let crs = pair[0];
+    let pre = pair[1];
+}
+```
+
+So step-by-step iteration:
+
+### First loop
+
+```js
+pair = [0, 1]
+crs = 0
+pre = 1
+```
+
+### Second loop
+
+```js
+pair = [1, 2]
+crs = 1
+pre = 2
+```
+
+That’s it. Nothing fancy.
+
+---
+
+# 3️⃣ What is `preMap`?
+
+Earlier you created it like this:
+
+```js
+const preMap = new Map();
+
+for (let i = 0; i < numCourses; i++) {
+    preMap.set(i, []);
+}
+```
+
+So if `numCourses = 3`, then:
+
+```txt
+preMap =
+0 → []
+1 → []
+2 → []
+```
+
+This means:
+
+> “For each course, store a list of its prerequisites”
+
+---
+
+# 4️⃣ What does this line do?
+
+```js
+preMap.get(crs).push(pre);
+```
+
+Let’s read it in **plain English**:
+
+> “Go to course `crs` and add `pre` to its list of prerequisites”
+
+---
+
+## Walk through a REAL example (IMPORTANT)
+
+### Input
+
+```js
+numCourses = 3
+prerequisites = [[0,1], [1,2]]
+```
+
+---
+
+### Before the loop
+
+```txt
+0 → []
+1 → []
+2 → []
+```
+
+---
+
+### Loop 1: `[0,1]`
+
+```js
+crs = 0
+pre = 1
+```
+
+Run:
+
+```js
+preMap.get(0).push(1);
+```
+
+Now:
+
+```txt
+0 → [1]
+1 → []
+2 → []
+```
+
+---
+
+### Loop 2: `[1,2]`
+
+```js
+crs = 1
+pre = 2
+```
+
+Run:
+
+```js
+preMap.get(1).push(2);
+```
+
+Now:
+
+```txt
+0 → [1]
+1 → [2]
+2 → []
+```
+
+---
+
+# 5️⃣ Visual meaning (THIS MAKES IT CLICK)
+
+![Image](https://i.sstatic.net/3ej6t.png)
+
+![Image](https://media.geeksforgeeks.org/wp-content/uploads/20200526220511/graph2.jpeg)
+
+This graph means:
+
+```
+0 → 1 → 2
+```
+
+Read it as:
+
+* Course 0 depends on 1
+* Course 1 depends on 2
+* Course 2 has no prerequisites
+
+---
+
+# 6️⃣ Why store `crs → pre` (not the opposite)?
+
+Because later in DFS we ask:
+
+> “Can I take **this course**?”
+
+To answer that, we must:
+
+* Look at **its prerequisites**
+* Recursively check them
+
+So this structure is perfect:
+
+```txt
+course → prerequisites
+```
+
+---
+
+# 7️⃣ One-sentence explanation (MEMORIZE THIS)
+
+> “This loop builds the graph by mapping each course to the list of courses that must be completed before it.”
+
+If you say this in an interview, you’re ✅ solid.
+
+---
+
+# 8️⃣ Common confusion (YOU ARE NOT ALONE)
+
+❌ Wrong thought:
+
+```
+crs → pre means pre depends on crs
+```
+
+✅ Correct thought:
+
+```
+crs depends on pre
+```
+
+The arrow is **dependency**, not execution order.
+
+---
+
+# 9️⃣ Ultra-simple rewrite (for your brain)
+
+The same code written very explicitly:
+
+```js
+for (let i = 0; i < prerequisites.length; i++) {
+    let course = prerequisites[i][0];
+    let prerequisite = prerequisites[i][1];
+
+    preMap.get(course).push(prerequisite);
+}
+```
+
+Same logic. Nothing hidden.
+
+---
+
+## 🔑 Final takeaway (BURN THIS IN)
+
+> `preMap` answers one question:
+> **“Before I take this course, what courses must I complete?”**
 
 ---
