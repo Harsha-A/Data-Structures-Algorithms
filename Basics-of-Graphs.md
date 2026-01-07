@@ -649,3 +649,266 @@ If you say this naturally → **Noogler ready**.
 
 ---
 
+==========================================================
+
+
+Awesome 👍
+Here’s **both** things you asked for:
+
+1️⃣ **1-page printable cheat sheet**
+2️⃣ **Step-by-step DFS execution trace (whiteboard style)**
+
+Keep this bookmarked — this alone is enough to **never get confused in Course Schedule again**.
+
+---
+
+# 🧾 1-PAGE CHEAT SHEET
+
+### Course Schedule / Directed Cycle Detection
+
+---
+
+## 🧠 Problem Recognition
+
+If the problem mentions:
+
+* prerequisites
+* dependencies
+* must be done before
+* ordering feasibility
+
+👉 **It’s a directed graph + cycle detection problem**
+
+---
+
+## 🧩 Graph Modeling
+
+* **Node** → Course
+* **Edge** → `course → prerequisite`
+* **Cycle** → Impossible to finish
+
+---
+
+## 🎯 Core Idea (MEMORIZE)
+
+> A directed graph can be completed **iff** it has **no cycle**
+
+---
+
+## 🔁 DFS State Model (CRITICAL)
+
+| State | Meaning                        |
+| ----- | ------------------------------ |
+| WHITE | Not visited                    |
+| GRAY  | Visiting (in current DFS path) |
+| BLACK | Fully processed (safe)         |
+
+Cycle rule:
+
+> **If DFS reaches a GRAY node → cycle**
+
+---
+
+## 🧠 DFS Logic (Whiteboard Pseudocode)
+
+```
+dfs(node):
+    if node is GRAY → cycle → return false
+    if node is BLACK → already safe → return true
+
+    mark node GRAY
+    for each prerequisite:
+        if dfs(prerequisite) is false:
+            return false
+
+    mark node BLACK
+    return true
+```
+
+---
+
+## 🧹 Why Memoization Works
+
+```js
+preMap.set(course, []);
+```
+
+Meaning:
+
+> “This course and all its dependencies are verified safe — skip next time”
+
+✔ Improves performance
+✔ Does NOT affect correctness
+
+---
+
+## 🔗 Disconnected Graphs
+
+Always do:
+
+```
+for each course:
+    dfs(course)
+```
+
+Because dependencies may be in multiple components.
+
+---
+
+## ⏱ Complexity
+
+* **Time:** `O(V + E)`
+* **Space:** `O(V + E)` (graph + recursion stack)
+
+---
+
+## 🎯 Interview Power Line (USE THIS)
+
+> “This is directed cycle detection using DFS with recursion stack tracking.”
+
+---
+
+---
+
+# 🧑‍🏫 STEP-BY-STEP DFS TRACE (WHITEBOARD GOLD)
+
+Let’s trace this input:
+
+```js
+numCourses = 3
+prerequisites = [[0,1],[1,2],[2,0]]
+```
+
+Graph:
+
+```
+0 → 1 → 2 → 0
+```
+
+![Image](https://media.geeksforgeeks.org/wp-content/uploads/cycle-BFS.png)
+
+![Image](https://miro.medium.com/v2/resize%3Afit%3A1400/1%2AvUNiYpY1_0lsZZwHuVvIEw.gif)
+
+---
+
+## 🔍 Step 1 — Start DFS from Course 0
+
+```
+visiting = {}
+```
+
+Call:
+
+```
+dfs(0)
+```
+
+Mark:
+
+```
+visiting = {0}
+```
+
+---
+
+## 🔍 Step 2 — Explore Prerequisite of 0 → 1
+
+```
+dfs(1)
+```
+
+Mark:
+
+```
+visiting = {0, 1}
+```
+
+---
+
+## 🔍 Step 3 — Explore Prerequisite of 1 → 2
+
+```
+dfs(2)
+```
+
+Mark:
+
+```
+visiting = {0, 1, 2}
+```
+
+---
+
+## 🚨 Step 4 — Explore Prerequisite of 2 → 0
+
+```
+dfs(0)
+```
+
+Check:
+
+```
+visiting.has(0) === true
+```
+
+🔥 **CYCLE DETECTED**
+
+Return `false` all the way up.
+
+---
+
+## ❌ Final Result
+
+```
+return false
+```
+
+👉 **Courses cannot be completed**
+
+---
+
+## 🧠 What the Interviewer Wants to Hear Here
+
+> “We revisited a node that was already in the current DFS path, which proves a circular dependency.”
+
+That sentence = ✅ **strong signal**
+
+---
+
+# 🔁 Now Compare with a VALID Case
+
+```js
+prerequisites = [[0,1],[1,2]]
+```
+
+Graph:
+
+```
+0 → 1 → 2
+```
+
+Trace:
+
+* 2 finishes → BLACK
+* 1 finishes → BLACK
+* 0 finishes → BLACK
+
+✔ No node revisited while GRAY
+✔ Valid schedule exists
+
+---
+
+# 🧠 FINAL 20-SECOND SUMMARY (MEMORIZE)
+
+> “I model courses as a directed graph. Using DFS with recursion stack tracking, if I revisit a node currently in the stack, I’ve found a cycle and return false. Otherwise, if all nodes finish safely, the courses can be completed.”
+
+---
+
+
+
+
+
+
+
+
+
