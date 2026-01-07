@@ -7,6 +7,7 @@ No heavy theory. No university jargon. Just **interview-useful fundamentals**.
 # 🧠 Graph Basics — Noogler DE Interview Level
 
 [Pre Read for Graphs](#Pre-Read-for-Graphs)
+[JS boilerplate to memorize](#JS-boilerplate-to-memorize)
 
 ---
 
