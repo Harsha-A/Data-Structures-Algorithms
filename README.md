@@ -11,7 +11,7 @@
 | [Number of Islands](#number-of-islands) | Medium | DFS, Connected Components, Grid Traversal | ✅ |
 | [Clone Graph](#Clone-Graph) | | | |
 | [Pacific Atlantic Water Flow](#Pacific-Atlantic-Water-Flow) | | | |
-| [Course Scheduler](#Course-Schedule) | | | |
+| [Course Scheduler](#Course-Scheduler) | | | |
 | Content Cell | | | |
 | Content Cell | | | |
 | Content Cell | | | |
