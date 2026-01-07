@@ -908,87 +908,145 @@ Trace:
 
 ================================================================
 
-## Pre Read for Graphs
-
-Perfect set of topics 👍 — this **exact bundle** covers ~70% of graph interview questions (including Google / Amazon / Meta).
-
-Below is a **complete JS-first study guide** with:
-
-* Clear **mental models**
-* **Reusable templates**
-* **When to use what**
-* **Classic LeetCode examples**
-* **Interview tips**
+Here’s a **clean, updated, interview-ready version** of your table with correct **difficulty, concepts, and learning flow**.
+I’ve also aligned it with **DFS / BFS / Topological Sort / Multi-Source BFS** so it works as a **progress tracker**.
 
 ---
 
-# 🧠 Graphs – Core Study Guide (JS)
+### 📊 Graph Problems – Study & Progress Tracker (JS)
 
-## How to think about Graph Problems
-
-Before code, always answer these **3 questions**:
-
-1. **Is the graph directed or undirected?**
-2. **Do I need to visit all nodes or stop early?**
-3. **Am I detecting a structure?**
-
-   * Connectivity → DFS/BFS
-   * Cycle → DFS state / indegree
-   * Ordering → Topological sort
-   * Distance / spread → BFS (often multi-source)
+| #  | Problem                            | Difficulty | Key Concepts                                   | Status | Notes               |
+| -- | ---------------------------------- | ---------- | ---------------------------------------------- | ------ | ------------------- |
+| 1  | **Number of Islands**              | Medium     | DFS, BFS, Connected Components, Grid Traversal | ✅      | Foundation problem  |
+| 2  | **Clone Graph**                    | Medium     | DFS, HashMap, Graph Traversal                  | ⬜      | Learn graph copying |
+| 3  | **Pacific Atlantic Water Flow**    | Medium     | DFS, Multi-Source BFS, Grid Graph              | ⬜      | Reverse thinking    |
+| 4  | **Course Schedule (I)**            | Medium     | DFS, Cycle Detection, Directed Graph           | ⬜      | Must-know           |
+| 5  | **Course Schedule II**             | Medium     | Topological Sort, BFS (Kahn’s Algo)            | ⬜      | Ordering            |
+| 6  | **Graph Valid Tree**               | Medium     | DFS/BFS, Cycle Detection                       | ⬜      | Tree properties     |
+| 7  | **Number of Connected Components** | Medium     | DFS, Union-Find (optional)                     | ⬜      | Components          |
+| 8  | **Rotting Oranges**                | Medium     | Multi-Source BFS, Levels                       | ⬜      | Time simulation     |
+| 9  | **Walls and Gates**                | Medium     | Multi-Source BFS                               | ⬜      | Distance fill       |
+| 10 | **Alien Dictionary**               | Hard       | Topological Sort, Graph Build                  | ⬜      | Advanced ordering   |
 
 ---
 
-## 1️⃣ DFS & BFS Templates (FOUNDATION)
+## 🔑 How to Use This Table (IMPORTANT)
 
-![Image](https://he-s3.s3.amazonaws.com/media/uploads/9fa1119.jpg)
+### Suggested Order (Do NOT skip)
 
-![Image](https://he-s3.s3.amazonaws.com/media/uploads/fdec3c2.jpg)
+1. Number of Islands
+2. Clone Graph
+3. Pacific Atlantic
+4. Course Schedule
+5. Course Schedule II
+6. Rotting Oranges
+7. Alien Dictionary
 
-### DFS – Recursive (Most Used)
+Each problem **adds exactly one new idea**.
 
-**Use when**: explore fully, detect cycles, components
+---
+
+## 🧠 What Interviewers Expect Per Problem
+
+| Problem            | What They Test                                  |
+| ------------------ | ----------------------------------------------- |
+| Number of Islands  | Can you traverse a grid correctly?              |
+| Clone Graph        | Do you understand graph structure + visited map |
+| Pacific Atlantic   | Can you reverse thinking + multi-source DFS     |
+| Course Schedule    | Can you detect cycles in directed graphs        |
+| Course Schedule II | Can you produce a valid ordering                |
+| Rotting Oranges    | Do you understand BFS levels                    |
+| Alien Dictionary   | Can you build a graph from constraints          |
+
+---
+
+## ✅ Status Meaning
+
+* ✅ Done & confident
+* ⬜ Solved but needs revision
+* ❌ Not started
+
+---
+
+## 🎯 Interview Tip (Very Important)
+
+If you master **just these 10**, you can confidently handle:
+
+* Google
+* Amazon
+* Meta
+* Uber
+* Atlassian
+
+---
+
+================================================================================
+
+## JS boilerplate to memorize
+
+
+Perfect 👍
+Below is the **JS graph boilerplate you can literally memorize** and reuse in **90% of graph problems**.
+This is written exactly how interviewers expect (clean, explainable, safe).
+
+---
+
+# 🧠 JavaScript Graph Boilerplate (MEMORIZE THIS)
+
+---
+
+## 0️⃣ Adjacency List (Base Setup)
+
+### Undirected Graph
 
 ```js
-function dfs(node, adj, visited) {
+const adj = Array.from({ length: n }, () => []);
+
+for (const [u, v] of edges) {
+  adj[u].push(v);
+  adj[v].push(u);
+}
+```
+
+### Directed Graph
+
+```js
+const adj = Array.from({ length: n }, () => []);
+
+for (const [u, v] of edges) {
+  adj[u].push(v);
+}
+```
+
+---
+
+## 1️⃣ DFS Template (Most Important)
+
+```js
+function dfs(node) {
   if (visited.has(node)) return;
   visited.add(node);
 
   for (const nei of adj[node]) {
-    dfs(nei, adj, visited);
+    dfs(nei);
   }
 }
 ```
 
-### DFS – Iterative (Stack)
+### When to use
 
-```js
-function dfsIterative(start, adj) {
-  const stack = [start];
-  const visited = new Set();
-
-  while (stack.length) {
-    const node = stack.pop();
-    if (visited.has(node)) continue;
-
-    visited.add(node);
-    for (const nei of adj[node]) {
-      stack.push(nei);
-    }
-  }
-}
-```
+* Connected components
+* Cycle detection (with states)
+* Grid traversal
 
 ---
 
-### BFS – Queue (Shortest path, levels)
-
-**Use when**: shortest distance, layers, spread
+## 2️⃣ BFS Template
 
 ```js
-function bfs(start, adj) {
+function bfs(start) {
   const queue = [start];
-  const visited = new Set([start]);
+  visited.add(start);
 
   while (queue.length) {
     const node = queue.shift();
@@ -1002,137 +1060,70 @@ function bfs(start, adj) {
 }
 ```
 
-🔑 **DFS vs BFS**
+### When to use
 
-| DFS              | BFS            |
-| ---------------- | -------------- |
-| Deep exploration | Level by level |
-| Recursion-heavy  | Queue-based    |
-| Cycle detection  | Shortest path  |
+* Shortest path (unweighted)
+* Level traversal
+* Spread problems
 
 ---
 
-## 2️⃣ Connected Components
-
-![Image](https://dist.neo4j.com/wp-content/uploads/20190215062515/graph-algorithms-strongly-connected-components-3.jpg)
-
-![Image](https://miro.medium.com/v2/resize%3Afit%3A1400/1%2ARf98vgvcLle1SZvLmmIwaQ.png)
-
-### Problem Pattern
-
-> “How many groups / islands / networks exist?”
-
-### Undirected Graph
+## 3️⃣ Connected Components (COUNT GROUPS)
 
 ```js
-function countComponents(n, edges) {
-  const adj = Array.from({ length: n }, () => []);
-  for (const [u, v] of edges) {
-    adj[u].push(v);
-    adj[v].push(u);
-  }
+let components = 0;
+const visited = new Set();
 
-  const visited = new Set();
-  let components = 0;
-
-  for (let i = 0; i < n; i++) {
-    if (!visited.has(i)) {
-      dfs(i, adj, visited);
-      components++;
-    }
+for (let i = 0; i < n; i++) {
+  if (!visited.has(i)) {
+    dfs(i);
+    components++;
   }
-  return components;
 }
 ```
 
-### Classic Problems
-
-* Number of Islands
-* Connected Components in Undirected Graph
-* Friend Circles
-
-🧠 **Interview insight**
-Each DFS/BFS call = **1 component**
+🧠 One DFS = one component
 
 ---
 
-## 3️⃣ Cycle Detection
-
-![Image](https://cdn.prod.website-files.com/6828da5fc9f6eba971cc609f/6875fe520803aae135b55d9f_Detect%20Cycle%20in%20Directed%20Graph%20using%20BFS.jpg)
-
-![Image](https://cdn.prod.website-files.com/6828da5fc9f6eba971cc609f/68794708b7add34a5f920cdb_Detect%20cycle%20in%20an%20undirected%20graph%20.jpg)
-
-### A) Directed Graph (MOST IMPORTANT)
-
-👉 Use **3 states**
-
-| State | Meaning                       |
-| ----- | ----------------------------- |
-| 0     | Unvisited                     |
-| 1     | Visiting (in recursion stack) |
-| 2     | Visited                       |
+## 4️⃣ Cycle Detection – Directed Graph ⭐⭐⭐
 
 ```js
-function hasCycleDirected(n, edges) {
-  const adj = Array.from({ length: n }, () => []);
-  for (const [u, v] of edges) adj[u].push(v);
+const state = Array(n).fill(0);
+// 0 = unvisited, 1 = visiting, 2 = visited
 
-  const state = Array(n).fill(0);
+function dfs(node) {
+  if (state[node] === 1) return true;
+  if (state[node] === 2) return false;
 
-  function dfs(node) {
-    if (state[node] === 1) return true;  // cycle
-    if (state[node] === 2) return false;
-
-    state[node] = 1;
-    for (const nei of adj[node]) {
-      if (dfs(nei)) return true;
-    }
-    state[node] = 2;
-    return false;
+  state[node] = 1;
+  for (const nei of adj[node]) {
+    if (dfs(nei)) return true;
   }
-
-  for (let i = 0; i < n; i++) {
-    if (dfs(i)) return true;
-  }
+  state[node] = 2;
   return false;
 }
 ```
 
-📌 **Used in**
+Used in:
 
 * Course Schedule
-* Dependency resolution
+* Dependency graphs
 
 ---
 
-### B) Undirected Graph
-
-👉 Track **parent**
+## 5️⃣ Cycle Detection – Undirected Graph
 
 ```js
-function hasCycleUndirected(n, edges) {
-  const adj = Array.from({ length: n }, () => []);
-  for (const [u, v] of edges) {
-    adj[u].push(v);
-    adj[v].push(u);
-  }
+function dfs(node, parent) {
+  visited.add(node);
 
-  const visited = new Set();
-
-  function dfs(node, parent) {
-    visited.add(node);
-    for (const nei of adj[node]) {
-      if (!visited.has(nei)) {
-        if (dfs(nei, node)) return true;
-      } else if (nei !== parent) {
-        return true;
-      }
+  for (const nei of adj[node]) {
+    if (!visited.has(nei)) {
+      if (dfs(nei, node)) return true;
+    } else if (nei !== parent) {
+      return true;
     }
-    return false;
-  }
-
-  for (let i = 0; i < n; i++) {
-    if (!visited.has(i) && dfs(i, -1)) return true;
   }
   return false;
 }
@@ -1140,183 +1131,135 @@ function hasCycleUndirected(n, edges) {
 
 ---
 
-## 4️⃣ Topological Sort (ORDERING PROBLEMS)
-
-![Image](https://i.imgur.com/Q3MA6dZ.png)
-
-![Image](https://i.sstatic.net/0154o.png)
-
-### When do you use this?
-
-* Tasks with **dependencies**
-* “Order of execution”
-* Course Schedule II
-
----
-
-### A) DFS-based Topological Sort
+## 6️⃣ Topological Sort – BFS (Kahn’s Algorithm)
 
 ```js
-function topoSortDFS(n, edges) {
-  const adj = Array.from({ length: n }, () => []);
-  for (const [u, v] of edges) adj[u].push(v);
+const indegree = Array(n).fill(0);
 
-  const visited = new Set();
-  const result = [];
+for (const [u, v] of edges) {
+  adj[u].push(v);
+  indegree[v]++;
+}
 
-  function dfs(node) {
-    if (visited.has(node)) return;
-    visited.add(node);
+const queue = [];
+for (let i = 0; i < n; i++) {
+  if (indegree[i] === 0) queue.push(i);
+}
 
-    for (const nei of adj[node]) dfs(nei);
-    result.push(node);
+const order = [];
+while (queue.length) {
+  const node = queue.shift();
+  order.push(node);
+
+  for (const nei of adj[node]) {
+    indegree[nei]--;
+    if (indegree[nei] === 0) queue.push(nei);
   }
-
-  for (let i = 0; i < n; i++) dfs(i);
-  return result.reverse();
 }
 ```
 
+🧠 If `order.length !== n` → cycle exists
+
 ---
 
-### B) Kahn’s Algorithm (BFS + Indegree) ⭐⭐⭐
-
-**Preferred in interviews**
+## 7️⃣ Grid DFS Template (2D Graph)
 
 ```js
-function topoSortBFS(n, edges) {
-  const adj = Array.from({ length: n }, () => []);
-  const indegree = Array(n).fill(0);
+const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
 
-  for (const [u, v] of edges) {
-    adj[u].push(v);
-    indegree[v]++;
+function dfs(r, c) {
+  if (
+    r < 0 || c < 0 ||
+    r >= ROWS || c >= COLS ||
+    grid[r][c] === '0'
+  ) return;
+
+  grid[r][c] = '0'; // mark visited
+
+  for (const [dr, dc] of dirs) {
+    dfs(r + dr, c + dc);
   }
-
-  const queue = [];
-  for (let i = 0; i < n; i++) {
-    if (indegree[i] === 0) queue.push(i);
-  }
-
-  const order = [];
-  while (queue.length) {
-    const node = queue.shift();
-    order.push(node);
-
-    for (const nei of adj[node]) {
-      indegree[nei]--;
-      if (indegree[nei] === 0) queue.push(nei);
-    }
-  }
-
-  return order.length === n ? order : [];
 }
 ```
 
-🧠 **Cycle check**
-If `order.length !== n` → cycle exists
+Used in:
+
+* Number of Islands
+* Flood fill
 
 ---
 
-## 5️⃣ Multi-Source BFS (SPREAD / DISTANCE)
-
-![Image](https://blog.tomsawyer.com/hs-fs/hubfs/Blog/2023.09.21.0.CrimeNetwork.Option2_1_optimized_100%20%281%29.png?height=400\&name=2023.09.21.0.CrimeNetwork.Option2_1_optimized_100+%281%29.png\&width=587)
-
-![Image](https://codeforces.com/predownloaded/a5/e9/a5e9c9467ef6b37f122f8b6da0621b54775dc608.png)
-
-### Pattern
-
-* Start BFS from **multiple nodes at once**
-* Push all sources into queue initially
-
----
-
-### Template (Grid)
+## 8️⃣ Multi-Source BFS (GRID)
 
 ```js
-function multiSourceBFS(grid, sources) {
-  const ROWS = grid.length;
-  const COLS = grid[0].length;
-  const queue = [];
+const queue = [];
 
-  for (const [r, c] of sources) {
-    queue.push([r, c]);
-  }
+for (const [r, c] of sources) {
+  queue.push([r, c]);
+}
 
-  while (queue.length) {
-    const [r, c] = queue.shift();
-    for (const [dr, dc] of [[1,0],[-1,0],[0,1],[0,-1]]) {
-      const nr = r + dr, nc = c + dc;
-      if (nr >= 0 && nc >= 0 && nr < ROWS && nc < COLS && grid[nr][nc] === 0) {
-        grid[nr][nc] = 1;
-        queue.push([nr, nc]);
-      }
+while (queue.length) {
+  const [r, c] = queue.shift();
+
+  for (const [dr, dc] of dirs) {
+    const nr = r + dr, nc = c + dc;
+    if (isValid(nr, nc)) {
+      mark(nr, nc);
+      queue.push([nr, nc]);
     }
   }
 }
 ```
 
----
-
-### Famous Problems
+Used in:
 
 * Rotting Oranges
-* Pacific Atlantic Water Flow
-* Nearest Exit from Maze
+* Pacific Atlantic
 * Walls & Gates
 
-🧠 **Key idea**
-All sources spread **simultaneously**, ensuring minimum distance.
+---
+
+## 9️⃣ Clone Graph Template
+
+```js
+const map = new Map();
+
+function dfs(node) {
+  if (map.has(node)) return map.get(node);
+
+  const clone = new Node(node.val);
+  map.set(node, clone);
+
+  for (const nei of node.neighbors) {
+    clone.neighbors.push(dfs(nei));
+  }
+  return clone;
+}
+```
 
 ---
 
-## 🧩 Problem → Technique Mapping
+## 🔁 Memorization Strategy (VERY IMPORTANT)
 
-| Problem Type               | Technique        |
-| -------------------------- | ---------------- |
-| Islands / groups           | DFS / BFS        |
-| Course schedule            | Cycle detection  |
-| Ordering tasks             | Topological sort |
-| Shortest path (unweighted) | BFS              |
-| Spread / time              | Multi-source BFS |
+Memorize **only these 6 things**:
 
----
+1. Adjacency list
+2. DFS
+3. BFS
+4. Directed cycle detection
+5. Topological sort
+6. Multi-source BFS
 
-## 📅 3-Day Crash Study Plan
-
-### Day 1
-
-* DFS & BFS templates
-* Connected components
-* Number of Islands
-
-### Day 2
-
-* Cycle detection (directed + undirected)
-* Course Schedule
-
-### Day 3
-
-* Topological Sort (BFS)
-* Multi-source BFS problems
+Everything else is **a variation**.
 
 ---
 
-## 🎯 Interview Tips (VERY IMPORTANT)
+## 🎯 Interview Gold Tip
 
-* Always **draw the graph**
-* Say **why DFS or BFS**
-* Mention **time complexity**
+When stuck, say:
 
-  * Graph traversal → `O(V + E)`
-* Explain **state tracking** clearly
+> “This is a graph traversal problem. I’ll build an adjacency list and use DFS/BFS.”
+
+This alone calms interviewers.
 
 ---
-
-
-
-
-
-
-
-
