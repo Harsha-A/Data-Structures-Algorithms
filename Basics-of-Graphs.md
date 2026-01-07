@@ -309,3 +309,343 @@ They want:
 5. Multi-source BFS
 
 ---
+
+Perfect — below are **DETAILED, INTERVIEW-READY NOTES on the *prerequisites*** for the **Course Schedule (Can Finish Courses)** problem.
+
+This is written the way **Google expects a Noogler / SDE-3 candidate to *understand before coding***.
+
+---
+
+# 📘 Detailed Prerequisite Notes
+
+### Course Schedule (Cycle Detection in Directed Graph)
+
+---
+
+## 0️⃣ What This Question Is REALLY Testing
+
+> This question is **NOT** about coding DFS.
+> It tests whether you understand:
+
+* **Dependencies**
+* **Directed graphs**
+* **Why cycles break feasibility**
+* **How DFS recursion state works**
+
+If you miss any prerequisite below, the solution becomes memorization.
+
+---
+
+## 1️⃣ Directed Graph Fundamentals (ABSOLUTE MUST)
+
+### 🔹 What is a Directed Graph?
+
+A graph where edges have direction.
+
+```
+A → B
+```
+
+Means:
+
+> You must finish **B before A**
+
+### 🔹 How This Maps to the Problem
+
+* **Node** → Course
+* **Directed Edge** → Prerequisite
+
+```js
+[course, prerequisite]
+```
+
+So:
+
+```txt
+[0, 1]  ⇒  0 → 1
+```
+
+Meaning:
+
+> To take course 0, you must first take course 1
+
+---
+
+### 🔹 Why This Is Not an Undirected Graph
+
+Dependencies are **one-way**.
+
+```
+Course 1 does NOT depend on Course 0
+```
+
+This matters because:
+
+* **Cycle detection logic is different**
+* Parent tracking (used in undirected graphs) does NOT work here
+
+---
+
+## 2️⃣ Graph Representation (Adjacency List)
+
+### 🔹 Why Adjacency List?
+
+Because:
+
+* `numCourses` up to 1000
+* Sparse dependencies
+* Efficient traversal
+
+```js
+Map<Course, [Prerequisites]>
+```
+
+Example:
+
+```txt
+0 → [1, 2]
+1 → [3]
+2 → []
+3 → []
+```
+
+This means:
+
+* Course 0 depends on 1 and 2
+* Course 1 depends on 3
+
+---
+
+### 🔹 Why Not Adjacency Matrix?
+
+* Matrix = O(N²)
+* Wasteful for sparse graphs
+* Slower iteration
+
+🧠 **Interview expectation**:
+
+> “I used adjacency list for O(V + E) traversal.”
+
+---
+
+## 3️⃣ Cycle in Directed Graph (CORE CONCEPT)
+
+### 🔹 What Is a Cycle?
+
+A path that starts and ends at the same node **following directions**.
+
+```
+0 → 1 → 2 → 0
+```
+
+![Image](https://media.geeksforgeeks.org/wp-content/uploads/cycle-BFS.png)
+
+![Image](https://blog.mrinalini.dev/img/graphs_dfs_directed_course_select.jpg)
+
+### 🔹 Why Cycle = Impossible?
+
+Because:
+
+* Each course waits on another
+* No course can be started
+
+📌 **This is the key logic leap Google wants**
+
+> “If a dependency cycle exists, no valid ordering exists.”
+
+---
+
+## 4️⃣ DFS Traversal (FOUNDATIONAL SKILL)
+
+You must know DFS **beyond syntax**.
+
+### 🔹 DFS Meaning
+
+> “Explore as deep as possible before backtracking.”
+
+### 🔹 DFS Call Stack Reality
+
+Each recursive call:
+
+* Pauses the caller
+* Adds a frame to the call stack
+
+This stack = **current dependency chain**
+
+---
+
+## 5️⃣ Recursion Stack Tracking (MOST IMPORTANT PREREQUISITE)
+
+### 🔹 Why `visiting` Exists
+
+```js
+const visiting = new Set();
+```
+
+This tracks:
+
+> **Nodes in the current DFS path**
+
+NOT:
+
+* All visited nodes
+* All processed nodes
+
+---
+
+### 🔹 Three Logical States (VERY IMPORTANT)
+
+Even if code uses Sets, you must understand this model:
+
+| State | Meaning             | Code Representation             |
+| ----- | ------------------- | ------------------------------- |
+| White | Never visited       | Not in map/set                  |
+| Gray  | Currently exploring | `visiting.has(node)`            |
+| Black | Fully processed     | `preMap.get(node).length === 0` |
+
+---
+
+### 🔹 Cycle Detection Rule (MEMORIZE)
+
+> If DFS reaches a **Gray** node → **cycle**
+
+This is why:
+
+```js
+if (visiting.has(crs)) return false;
+```
+
+---
+
+## 6️⃣ Backtracking (DFS Hygiene)
+
+### 🔹 What Is Backtracking?
+
+Undoing state after recursion completes.
+
+```js
+visiting.add(crs);
+// explore children
+visiting.delete(crs);
+```
+
+Why needed?
+
+* Prevent false cycle detection
+* Clean recursion path
+
+🧠 Interview test:
+
+> “What breaks if you forget to remove from `visiting`?”
+
+---
+
+## 7️⃣ Memoization / Pruning in DFS
+
+This line is **not optional understanding**:
+
+```js
+preMap.set(crs, []);
+```
+
+### 🔹 What It Means Conceptually
+
+> “This node is confirmed safe.
+> No need to re-check its dependencies.”
+
+### 🔹 Why This Is Correct
+
+Because:
+
+* All its prerequisites were already verified
+* DFS guarantees correctness before reaching here
+
+### 🔹 Without This
+
+* Algorithm still correct
+* But may become O(N²)
+
+---
+
+## 8️⃣ Disconnected Graphs
+
+Courses may form **multiple independent graphs**.
+
+```
+0 → 1
+
+2 → 3
+```
+
+So you must:
+
+```js
+for (let c = 0; c < numCourses; c++) {
+    dfs(c);
+}
+```
+
+🧠 Interview check:
+
+> “Why not start from course 0 only?”
+
+---
+
+## 9️⃣ Relation to Topological Sort (CONCEPTUAL PREREQ)
+
+You must know:
+
+### 🔹 Definition
+
+Topological sort = ordering where:
+
+```
+prerequisite comes before dependent
+```
+
+### 🔹 Key Fact
+
+> A directed graph has a topological order **iff** it has **no cycle**
+
+This problem is asking:
+
+> “Does a valid topological ordering exist?”
+
+DFS cycle detection answers that.
+
+---
+
+## 🔟 Complexity Analysis (NON-NEGOTIABLE)
+
+You must be fluent with:
+
+### Time
+
+```
+O(V + E)
+```
+
+Why?
+
+* Each node processed once
+* Each edge explored once
+
+### Space
+
+```
+O(V + E)  (graph)
+O(V)      (recursion + visiting set)
+```
+
+---
+
+## 🧠 Mental Model Summary (MEMORIZE THIS)
+
+> “This problem models course dependencies as a directed graph.
+> A cycle makes completion impossible.
+> DFS with recursion stack tracking detects cycles efficiently.”
+
+If you say this naturally → **Noogler ready**.
+
+---
+
