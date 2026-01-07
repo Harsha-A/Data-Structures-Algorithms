@@ -6,15 +6,15 @@
    3. [DFS-&-BFS](https://github.com/Harsha-A/Data-Structures-Algorithms/blob/cf73ce7523d9e9726db773d3bb454ecddbbb8dc7/DFS-%26-BFS.md)
 ## Problem Index
 
-| Problem | Difficulty | Key Concepts | Status |
+| Problem | Difficulty | Key Concepts | Status | Link |
 |---------|-----------|--------------|--------|
 | [Number of Islands](#number-of-islands) | Medium | DFS, Connected Components, Grid Traversal | ✅ |  |
-| [Clone Graph](#Clone-Graph) | | | |
-| [Pacific Atlantic Water Flow](#Pacific-Atlantic-Water-Flow) | | | |
+| [Clone Graph](#Clone-Graph) | | | | |
+| [Pacific Atlantic Water Flow](#Pacific-Atlantic-Water-Flow) | | | | |
 | [Course Scheduler](#Course-Scheduler) | Medium | DFS, Directed Graph | |[Detailed Explanation](#Detailed-Explanation) |
-| Content Cell | | | |
-| Content Cell | | | |
-| Content Cell | | | |
+| Content Cell | | | | |
+| Content Cell | | | | |
+| Content Cell | | | | |
 
 ***
 
@@ -2327,7 +2327,7 @@ Say this at the end:
 ---
 
 
-## Detailed Explanation : 
+## Detailed Explanation 
 
 No worries — this line confuses **almost everyone the first time**.
 Let’s slow it **way down** and explain it **visually + mechanically**, no jargon.
